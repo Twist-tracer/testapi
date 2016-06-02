@@ -29,20 +29,7 @@
 					<label for="contact_email">E-mail</label><input id="contact_email" type="email" name="email">
 				</div>
 				<div class="field">
-					<label for="contact_web">Web-сайт</label><input id="contact_web" type="url" name="web">
-				</div>
-				<div class="field">
 					<label for="contact_jabber">Jabber</label><input id="contact_jabber" type="text" name="jabber">
-				</div>
-				<div class="field">
-					<label for="contact_scope">Сфера деятельности</label>
-					<select id="contact_scope" name="scope[]" size="5" multiple>
-						<option value="it">IT, телекоммуникации, связь, электроника</option>
-						<option value="auto">Автосервис, автобизнес</option>
-						<option value="bookkeeping">Бухгалтерия, аудит</option>
-						<option value="restaurants">Рестораны, фастфуд</option>
-						<option value="economy">Экономика, финансы</option>
-					</select>
 				</div>
 				<div>
 					<button type="submit">Создать контакт</button>
