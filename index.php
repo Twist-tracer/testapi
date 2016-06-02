@@ -3,37 +3,28 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Добавление контакта</title>
+	<title>Добавление сделок</title>
 	<link rel="stylesheet" type="text/css" href="css/main.css" media="all">
 </head>
 <body>
 	<div id="wrapper">
 		<header>
-			<h1>Создание контакта</h1>
+			<h1>Добавление сделок</h1>
 		</header>
 		<div id="contact_form">
 			<form action="handler.php" method="post">
-				<div class="field">
-					<label for="contact_name">Имя</label><input id="contact_name" type="text" name="name">
-				</div>
-				<div class="field">
-					<label for="contact_company">Компания</label><input id="contact_company" type="text" name="company">
-				</div>
-				<div class="field">
-					<label for="contact_position">Должность</label><input id="contact_position" type="text" name="position">
-				</div>
-				<div class="field">
-					<label for="contact_phone">Телефон</label><input id="contact_phone" type="tel" name="phone">
-				</div>
-				<div class="field">
-					<label for="contact_email">E-mail</label><input id="contact_email" type="email" name="email">
-				</div>
-				<div class="field">
-					<label for="contact_jabber">Jabber</label><input id="contact_jabber" type="text" name="jabber">
-				</div>
+                <div class="field">
+                    Добавить
+                    <select name="number" id="number">
+                        <option value="5">5</option>
+                        <option value="100">50</option>
+                        <option value="500">100</option>
+                        <option value="1000">1000</option>
+                    </select>
+                    случайных сделок
+                </div>
 				<div>
-					<button type="submit">Создать контакт</button>
-					<button type="reset">Очистить форму</button>
+					<button type="submit">Добавить</button>
 				</div>
 			</form>
 		</div>
