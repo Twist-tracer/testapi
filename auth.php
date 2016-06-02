@@ -1,11 +1,11 @@
 <?php
 #Массив с параметрами, которые нужно передать методом POST к API системы
 $user=array(
-    'USER_LOGIN'=>'twist.tracer@gmail.com', #Ваш логин (электронная почта)
-    'USER_HASH'=>'3152adcab5a33956a198f997412f4310' #Хэш для доступа к API (смотрите в профиле пользователя)
+	'USER_LOGIN'=>'test@testmail.com', #Ваш логин (электронная почта)
+	'USER_HASH'=>'7ebefd1d4741106a4daa0e0a673bba2e4dc16054' #Хэш для доступа к API (смотрите в профиле пользователя)
 );
-
-$subdomain='new574ecc38d8fce'; #Наш аккаунт - поддомен
+ 
+$subdomain='torf'; #Наш аккаунт - поддомен
 #Формируем ссылку для запроса
 $link='https://'.$subdomain.'.amocrm.ru/private/api/auth.php?type=json';
 $curl=curl_init(); #Сохраняем дескриптор сеанса cURL
@@ -23,7 +23,7 @@ curl_setopt($curl,CURLOPT_SSL_VERIFYHOST,0);
 
 $out=curl_exec($curl); #Инициируем запрос к API и сохраняем ответ в переменную
 $code=curl_getinfo($curl,CURLINFO_HTTP_CODE); #Получим HTTP-код ответа сервера
-curl_close($curl); #Завершаем сеанс cURL
+curl_close($curl); #Заверашем сеанс cURL
 CheckCurlResponse($code);
 /**
  * Данные получаем в формате JSON, поэтому, для получения читаемых данных,
@@ -32,5 +32,6 @@ CheckCurlResponse($code);
 $Response=json_decode($out,true);
 $Response=$Response['response'];
 if(isset($Response['auth'])) #Флаг авторизации доступен в свойстве "auth"
-    return 'Авторизация прошла успешно';
+	return 'Авторизация прошла успешно';
 return 'Авторизация не удалась';
+?>
