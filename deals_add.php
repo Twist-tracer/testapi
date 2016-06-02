@@ -30,5 +30,7 @@ CheckCurlResponse($code);
  */
 $Response=json_decode($out,true);
 // Массив с id добавленных сделок
-$Deals_response=$Response['response']['leads']['add'];
+$dealsResponse=$Response['response']['leads']['add'];
+
+return $dealsResponse;
 ?>

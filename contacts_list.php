@@ -1,5 +1,5 @@
 <?php
-$link='https://'.$subdomain.'.amocrm.ru/private/api/v2/json/contacts/list?query='.$data['email'];
+$link='https://'.$subdomain.'.amocrm.ru/private/api/v2/json/contacts/list?query='.$contacts_data['email'];
 $curl=curl_init(); #Сохраняем дескриптор сеанса cURL
 #Устанавливаем необходимые опции для сеанса cURL
 curl_setopt($curl,CURLOPT_RETURNTRANSFER,true);
