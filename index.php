@@ -8,10 +8,8 @@
 </head>
 <body>
 	<div id="wrapper">
-		<header>
-			<h1>Добавление сделок</h1>
-		</header>
 		<div id="contact_form">
+			<h2>Добавление сделок</h2>
 			<form action="handler.php" method="post" onSubmit="return checkForm(this)">
                 <div class="field">
                     Добавить
@@ -25,6 +23,35 @@
                     </select>
                     случайных сделок
                 </div>
+				<div>
+					<button type="submit">Добавить</button>
+				</div>
+			</form>
+			<hr>
+			<h2>Добавление полей</h2>
+			<form action="handler2.php" method="post" onSubmit="return checkForm(this)">
+				<div class="field">
+					<label for="field_name">Название поля</label>
+					<input type="text" name="field_name" id="field_name">
+				</div>
+				<div class="field">
+					<label for="element_type">Добавить поле в </label>
+					<select name="element_type" id="element_type">
+						<option value="1">Контакт</option>
+						<option value="2">Сделка</option>
+						<option value="3">Компания</option>
+					</select>
+				</div>
+				<div class="field">
+					<label for="field_type">Тип поля</label>
+					<select name="field_type" id="field_type">
+						<option value="1">Текст</option>
+						<option value="2">Числовое</option>
+						<option value="3">Чекбокс</option>
+						<option value="4">Селект</option>
+						<option value="5">Мультисписок</option>
+					</select>
+				</div>
 				<div>
 					<button type="submit">Добавить</button>
 				</div>
