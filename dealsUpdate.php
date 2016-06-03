@@ -1,17 +1,23 @@
 <?php
-$field=array(
-    'name' => $_POST['field_name'],
-    'type' => $_POST['field_type'],
-    'element_type' => $_POST['element_type'],
-    'origin' => md5($_POST['field_name'].$_POST['field_type'].$_POST['element_type']).'_'.str_replace(" ", "_", $_POST['field_name']),
-    'enums' => $_POST['options'],
-    'disabled' => 1
-);
+foreach($deals_fields as $deal_field) {
+    $custom_fields[] = array(
+        'id' => $deal_field['id'],
+        'values' => array_rand($deal_field['enums'], mt_rand(1, 3))
+    );
+}
 
-$set['request']['fields']['add'][]=$field;
+foreach($deals_list as $deal) {
+    $deals[] = array(
+        'id' => $deal['id'],
+        'last_modified' => time(),
+        'custom_fields'=> $custom_fields
+    );
+}
+
+$set['request']['leads']['update']=$deals;
 
 #Формируем ссылку для запроса
-$link='https://'.$subdomain.'.amocrm.ru/private/api/v2/json/fields/set';
+$link='https://'.$subdomain.'.amocrm.ru/private/api/v2/json/leads/set';
 $curl=curl_init(); #Сохраняем дескриптор сеанса cURL
 #Устанавливаем необходимые опции для сеанса cURL
 curl_setopt($curl,CURLOPT_RETURNTRANSFER,true);
@@ -35,14 +41,8 @@ CheckCurlResponse($code);
  * нам придётся перевести ответ в формат, понятный PHP
  */
 $Response=json_decode($out,true);
-$Response=$Response['response']['fields']['add'];
+$Response=$Response['response']['leads'];
 
-if(isset($Response[0]['id'])) print('Поле успешно добавленно');
+if(isset($Response['update'])) print('Сделки успешно обновлены');
 else print($Response);
-
-$output='ID добавленных контактов:'.PHP_EOL;
-foreach($Response as $v)
-    if(is_array($v))
-        $output.=$v['id'].PHP_EOL;
-return $output;
 ?>
