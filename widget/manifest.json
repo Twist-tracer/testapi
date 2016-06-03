@@ -1,0 +1,38 @@
+{
+    "widget":{
+            "name": "widget.name",
+            "description": "widget.description",
+            "short_description": "widget.short_description",
+            "code": "my_export_widget",
+            "secret_key": "ce3934db6e62662daf5c57037de960a28ce8b785164545ab91c9c050feaa2229",
+            "version": "1.0.0",
+            "interface_version": 2,
+            "init_once": false,
+            "locale":[
+                    "ru",
+                    "en"
+                    ],
+            "installation": true
+            },
+    "locations":[
+            "llist-0",
+            "settings"
+            ],
+    "settings":{
+                "login":{
+                        "name": "settings.login",
+                        "type": "text",
+                        "required": true
+                        },
+                "api_key":{
+                        "name": "settings.api_key",
+                        "type": "text",
+                        "required": true
+                        },
+                "account":{
+                        "name": "settings.account",
+                        "type": "text",
+                        "required": true
+                        }
+            }
+}

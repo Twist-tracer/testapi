@@ -1,0 +1,12 @@
+{
+    "widget":{
+        "name":"MyWidget",
+        "short_description":"Widget for export checked deals",
+        "description":"Widget for export checked deals (name, create date, tags, information of custom fields), names of linked contacts, companies into csv file"
+    },
+    "settings":{
+        "login":"User login",
+        "api_key":"API key",
+        "account":"Account"
+    }
+}
