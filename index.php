@@ -16,10 +16,8 @@
 				select_type_block.appendChild(div);
 			}
 			else {
-				var nodlist = document.getElementsByName('priority[]');
-				for(var i = 0; i < nodlist.length; i++) {
-					nodlist[i].parentNode.remove();
-				}
+				var options = document.getElementsByClassName('options')[0];
+				if(options != undefined)options.parentNode.removeChild(options);
 			}
 		}
 	</script>
