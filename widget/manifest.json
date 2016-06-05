@@ -4,8 +4,8 @@
             "description": "widget.description",
             "short_description": "widget.short_description",
             "code": "my_export_widget",
-            "secret_key": "ce3934db6e62662daf5c57037de960a28ce8b785164545ab91c9c050feaa2229",
-            "version": "1.0.0",
+            "secret_key": "8ea93762ea86d795f3cf42b21c37553b7b3a37682f218b6ef3a4de7727a67ca3",
+            "version": "1.0.2",
             "interface_version": 2,
             "init_once": false,
             "locale":[
