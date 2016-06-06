@@ -1,31 +1,13 @@
-.modal-body__title {
-	padding-bottom: 0.5em;
-	text-align: center;
-	font-size: 2em;
-	font-weight: 600;
-	border-bottom: 1px solid #e3e3e3
+.mew-link {
+	color: #1375ab;
+	text-decoration: underline;
+	cursor: pointer;
 }
 
-.export-settings {
-	margin-top: 15px;
+.mew-success {
+	color: green;
 }
 
-.export-settings__title {
-	text-align: center;
-	font-size: 1.3em;
-}
-
-.form-checklist {
-	margin: 15px 0;
-	font-size: 1.2em;
-}
-
-.form-checklist__title,
-.form-checklist__item
-{
-	margin-bottom: 5px;
-}
-
-.form-checklist__item {
-	display: block;
+.mew-error {
+	color: red;
 }

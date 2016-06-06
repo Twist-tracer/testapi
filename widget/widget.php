@@ -1,327 +1,278 @@
 <?php
-namespace test;
-defined('LIB_ROOT') or die();
 /**
- * Class Widget
- * example widget class
+ * Class MyExportWidget
  */
-class Widget extends \Helpers\Widgets{
-	protected function endpoint_get(){
-		//to get widget lang value based on account setting
-		//\Helpers\Debug::vars(\Helpers\I18n::get('settings.enums.yes'));
-		/**
-		 * current account information
-		 */
-		//\Helpers\Debug::vars($this->account->current(),'account');
+class MyExportWidget
+{
+	private $leadsData;
+	private $configs;
 
-		/**
-		 * get methods
-		 * array with available params
-		 */
-		$params = array(
-			//'since'=>time()-36000, //since what time get elements (only timestamp)
-			//'limit'=>10, //limitation of response elements (max 500)
-			//'offset'=>0, //limit offset
-			//'id'=>2000308, //take element from account with this id (if this param exists all others are skipping)
-			//'query'=>'test', //search element by query (you can search by email or phone or any other fields, except notes and tasks
-			//'type'=>'contact', //or lead - this param only require for notes selection, but also available for tasks
-			//'element_id'=> 5282604 //contact or lead id - only for notes or tasks selection
-			//'status'=>array(26264,142), //only for leads - id of lead's statuses you can find in $this->account->current('leads_statuses)
-			//'responsible_user_id'=>array(52,8), //for contacts,leads and tasks - set additional filter for responsible user(s)
-
-		);
-		//\Helpers\Debug::vars($this->contacts->get($params),'contacts');
-		//\Helpers\Debug::vars($this->leads->get($params),'leads');
-		//\Helpers\Debug::vars($this->tasks->get($params),'tasks');
-		//\Helpers\Debug::vars($this->notes->get($params), 'notes');
+	public function __construct($data, $configs) {
+		$this->leadsData = json_decode($data, true);
+		$this->configs = $configs;
 	}
 
-	protected function endpoint_set(){
+	public function generateCSVFile() {
+		$collection = $this->collectInformstion();
 
-		/**
-		 * contacts set example
-		 */
-		$request = array(
-						'add'=>array(),
-						'update'=>array()
-						);
+		return $this->generateCSVString($collection);
+	}
 
-		$request['add'][] = array(
-								'name' => 'test_widget_'.rand(0,9999999),
-								//'date_create'=>1298904164, //optional
-								//'last_modified' => 1298904164, //optional
-								'linked_leads_id' => array( //array of linked leads ids
-														2000309,
-														2000042
-														),
-								'company_name' => 'amowidget',
-								'custom_fields' => array(
-														array(
-															'id' => 9536, //custom field id
-															'values' => array(
-																			array(
-																					'value' => rand(0,999).'-'.rand(0,99).'-'.rand(0,99),
-																					//enum for phone,email and im must be symbolic, for others numeric
-																					//(all enums are in account description)
-																					//see $this->account->current('custom_fields')
-																					'enum' => 'MOB',
-																					),
-																			array(
-																				'value' => rand(0,999).'-'.rand(0,99).'-'.rand(0,99),
-																				'enum' => 'MOB',
-																			),
-																			array(
-																				'value' => '7('.rand(0,999).')'.rand(0,999).'-'.rand(0,99).'-'.rand(0,99),
-																				'enum' => 'HOME',
-																			),
-																		),
-															),
-														array(
-															'id' => 9540, //custom field id
-															'values' => array(
-																			array(
-																				'value' => rand(0,999).'@mail.com',
-																				//enum for phone,email and im must be symbolic, for others numeric
-																				//(all enums are in account description)
-																				//see $this->account->current('custom_fields')
-																				'enum' => 'WORK',
-																			),
-																			array(
-																				'value' => rand(0,999).'@mail.com',
-																				'enum' => 'PRIV',
-																			),
-																			array(
-																				'value' => rand(0,999).'@mail.com',
-																				'enum' => 'OTHER',
-																			),
-															),
-														),
-														array(
-															'id' => 9538,
-															'values' => array(
-																			0 => array(
-																					'value' => str_shuffle('qwertyuiopasdfghjklzxcvbnm').' '.rand(0,999999).str_shuffle('qwertyuiopasdfghjklzxcvbnm')
-																			)
-															)
-														),
-														array(
-															'id' => 9534,
-															'values' => array(
-																			0 => array(
-																					'value' => str_shuffle('qwertyuio\'"pasdfghjklzxcvbnm').'.com'
-																					)
-																			)
-															),
-														//select field must contain value from enums list (ONLY ONE), otherwise api will take first one
-														array(
-															'id' => 334046,
-															'values' => array(
-																			0 => array(
-																					'value' => 'list3',
-																					)
-																			)
-														),
-														array(
-															'id' => 424776,
-															'values' => array(
-																			0 => array(
-																					'value' => 5555
-																					)
-																			)
-															),
-														)
-								);
+	private function collectInformstion() {
+		// 1) Авторизуемся, если авторизация прошла успешно идем дальше
+		if($this->auth()) {
+			// 2) Получим информацию о сделках по их ID, если сделки вернулись идем дальше
+			$leads = $this->getLeadsOnID();
+			/**
+			 * $leads[]['name'] - название
+			 * $leads[]['date_create'] - дата создания
+			 * $leads[]['tags'] - теги
+			 * $leads[]['custom_fields'] - информация из кастомных полей
+			 * $leads[]['linked_company_id'] - ID связанной компании
+			 * $cl_links[]['contact_id'] - ID связанного контакта
+			 * $contacts[]['name] - Имя связанного контакта
+			 * $companies[]['name] - Имя связанной компании
+			 */
+			if(!empty($leads)) {
+				// 3) Получим данные информацию о связанных контактах по ID сделок
+				$cl_links = $this->getContactsAndLeadsRelations();
 
-		$request['update'][] = array(
-									'id'=>1232810,
-									'last_modified'=>time(),//if last modified is lower than in amoCRM DB, then it will not rewrite, but will return what it have
-									'responsible_user_id'=>23305,
-									'linked_leads_id'=>array(
-															199402
-															)
-									//other fields fills same as for add
-									);
+				// 4) Получим все контакты по уже известным ID
+				$contactsData = array();
+				for($i = 0; $i < count($leads); $i++) {
+					$contactsData[$i] = $cl_links[$i]['contact_id'];
+				}
+				$contacts = $this->getContactsOnID($contactsData);
 
-		//\Helpers\Debug::vars($this->contacts->set($request));
 
-		/**
-		 * notes set example
-		 */
-		$request = array(
-						/*'add'=>array(
-									array(
-										'element_id' => 8000651, //contact/lead id
-										'element_type' => $this->_types['contacts'], //contact/lead type - can be found in variable $this->_types['contacts'] or $this->_types['leads']
-										'note_type' => 4, //available note's types you can find in $this->account->current('note_types'),
-										'date_create'=>time()-360000, //optional field
-										//'last_modified'=>time(), //optional field
-										'text' => 'amowidget note test common '.rand(0,99999)
-									),
-									array(
-										'element_id' => 2000309,
-										'element_type' => $this->_types['leads'],
-										'note_type' => 4,
-										'text' => 'amowidget note for lead '.rand(0,99999)
-									),
-								),*/
-						'update'=>array(
-										array (
-											'id' => 1088098,
-											'element_id' => 200808,
-											'element_type' => $this->_types['leads'],
-											'note_type' => 4,
-											'last_modified' =>time(), //if last modified is lower than in amoCRM DB, then it will not rewrite, but will return what it have
-											'text' => "Test update \n alalalala",
-								            ),
-									)
-						);
-		//\Helpers\Debug::vars($this->notes->set($request));
+				// 5) Получим все компании по уже известным ID
+				$companiesData = array();
+				for($i = 0; $i < count($leads); $i++) {
+					$companiesData[$i] = $leads[$i]['linked_company_id'];
+				}
+				$companies = $this->getCompaniesOnID($companiesData);
 
-		/**
-		 * tasks set example
-		 */
-		$request = array(
-						'add'=>array(
-									array(
-										'element_id' => 8000651, //contact/lead id
-										'element_type' => $this->_types['contacts'], //contact/lead type - can be found in variable $this->_types['contacts'] or $this->_types['leads']
-										//'date_create'=>time()-360000, //optional field
-										//'last_modified'=>time(), //optional field
-										'task_type'=>2233, //can be found in $this->account->current('task_types'), can be CALL,LETTER,MEETING or id of task_type
-										'text' => 'amowidget task test mmmm custom '.rand(0,99999),
-										'complete_till'=>time()-360000
-									),
-									array(
-										'element_id' => 2000309,
-										'element_type' => $this->_types['leads'],
-										'task_type'=>'LETTER',
-										'text' => 'amowidget task test LETTER '.rand(0,99999),
-										'complete_till'=>time()+3600*24
-									),
-						),
-						'update'=>array(
-									array (
-										'id' => 402362,
-										'element_id' => 128962,
-										'element_type' => $this->_types['leads'],
-										'task_type'=>'MEETING',
-										'last_modified' =>time(), //if last modified is lower than in amoCRM DB, then it will not rewrite, but will return what it have
-										'text' => 'Meet that guy',
-										'complete_till'=>time()+36000
-									),
-						)
-					);
-		//\Helpers\Debug::vars($this->tasks->set($request));
+				// 6) Получим данные информацию о кастомных полях сделок
+				$fields = $this->getFields();
 
-		/**
-		 * leads set example
-		 */
-		$request = array(
-						'add'=>array(
-									array(
-										'name' => 'amowidget_phar_'.rand(0,99999),
-										//'date_create'=>time()-360000, //optional
-										'status_id' => 26267, //optional - default first account status - list of statuses $this->account->current('leads_statuses')
-										'price' => 500000,
-										'custom_fields' => array(
-																array(
-																	'id' => 290642,
-																	'values' => array(
-																		0 => array(
-																			'value' => str_shuffle('qwert\'"yuiopasdfghjklzxcvbnm').' '.rand(0,999999).str_shuffle('qwertyuiopasdfghjklzxcvbnm')
-																		)
-																	)
-																),
-																array(
-																	'id' => 966,
-																	'values' => array(
-																		0 => array(
-																			'value' => str_shuffle('qwertyuiopasdfghjklzxcvbnm').'.com'
-																		)
-																	)
-																),
-																//select field must contain value from enums list (ONLY ONE), otherwise api will take first one
-																array(
-																	'id' => 968,
-																	'values' => array(
-																		0 => array(
-																			'value' => 'amocrm_'.rand(0,9999),
-																		)
-																	)
-																),
-																array(
-																	'id' => 309752,
-																	'values' => array(
-																		0 => array(
-																			'value' => 1
-																		)
-																	)
-																),
-																array(
-																	'id' => 340947,
-																	'values' => array(
-																		0 => array(
-																			'value' => 'radio3'
-																		)
-																	)
-																),
-															)
-										),
-									),
-						'update'=>array(
-									array(
-										'id'=>2000322,
-										'name' => 'amowidget_lead_upd_'.rand(0,9999),
-										'status_id' => 142, //optional
-										'last_modified' => time(), //if last modified is lower than in amoCRM DB, then it will not rewrite, but will return what it have
-										'price' => rand(10000,9999999),
-										'custom_fields' => array(
-																array(
-																	'id' => 290642,
-																	'values' => array(
-																		0 => array(
-																			'value' => str_shuffle('qwert\'"yuiopasdfghjklzxcvbnm').' '.rand(0,999999).str_shuffle('qwertyuiopasdfghjklzxcvbnm')
-																		)
-																	)
-																),
-																array(
-																	'id' => 966,
-																	'values' => array(
-																		0 => array(
-																			'value' => str_shuffle('qwertyuiopasdfghjklzxcvbnm').'.com'
-																		)
-																	)
-																),
-																//select field must contain value from enums list (ONLY ONE), otherwise api will take first one
-																array(
-																	'id' => 968,
-																	'values' => array(
-																		0 => array(
-																			'value' => 'amocrm_'.rand(0,9999),
-																		)
-																	)
-																),
-																array(
-																	'id' => 309752,
-																	'values' => array(
-																		0 => array(
-																			'value' => 1
-																		)
-																	)
-																),
-																array(
-																	'id' => 340947,
-																	'values' => array(
-																		0 => array(
-																			'value' => 'radio3'
-																		)
-																	)
-																),
-															)
-										)
-									)
-						);
-		//\Helpers\Debug::vars($this->leads->set($request));
+				return array(
+					"leads" => $leads,
+					"contacts" => $contacts,
+					"companies" => $companies,
+					"fields" => $fields
+				);
+			}
+		}
+	}
 
+
+	private function generateCSVString($data) {
+		# Собираем заглавную строчку
+		$header = '"Название сделки";"Дата создания сделки";"Теги";"Имя связанного контакта";"Название связанной компании";';
+
+		if(count($data["fields"]) != 0) {
+			for($i = 0; $i < count($data["fields"]); $i++) {
+				if($i < count($data["fields"]) - 1)
+					$header .= '"'.$data["fields"][$i]['name'].'";';
+				else $header .= '"'.$data["fields"][$i]['name'].'"';
+			}
+		}
+
+		# А теперь и все остальные
+		$row = "";
+		for($i = 0; $i < count($data["leads"]); $i++) {
+			$row .= '"'.$data["leads"][$i]['name'].'";';
+			$row .= '"'.date("d:m:Y H:i:s", $data["leads"][$i]['date_create']).'";';
+			if(count($data["leads"][$i]['tags']) == 0) {
+				$row .= '"";';
+			} else {
+				for($j = 0; $j < count($data["leads"][$i]['tags']); $j++) {
+					if($j < count($data["leads"][$i]['tags']) - 1) {
+						$row .= '"'.$data["leads"][$i]['tags'].'",';
+					} else {
+						$row .= '"'.$data["leads"][$i]['tags'].'";';
+					}
+				}
+
+			}
+			$row .= '"'.$data["contacts"][$i]['name'].'";';
+			$row .= '"'.$data["companies"][$i]['name'].'";';
+			if(count($data["fields"]) != 0) {
+				for($j = 0; $j < count($data["fields"]); $j++) {
+
+					if($j < count($data["fields"]) - 1) {
+						if($data["fields"][$j]['name'] == $data["leads"][$i]['custom_fields'][$j]['name']) {
+							if(count($data["leads"][$i]['custom_fields'][$j]['values']) == 0) {
+								$row .= '"";';
+							} else {
+								for($t = 0; $t < count($data["leads"][$i]['custom_fields'][$j]['values']); $t++) {
+									if($t < count($data["leads"][$i]['custom_fields'][$j]['values']) - 1) {
+										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'",';
+									} else {
+										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'"';
+									}
+								}
+							}
+						}
+						$row .= ';';
+					} else {
+						if($data["fields"][$j]['name'] == $data["leads"][$i]['custom_fields'][$j]['name']) {
+							if(count($data["leads"][$i]['custom_fields'][$j]['values']) == 0) {
+								$row .= '"";';
+							} else {
+								for($t = 0; $t < count($data["leads"][$i]['custom_fields'][$j]['values']); $t++) {
+									if($t < count($data["leads"][$i]['custom_fields'][$j]['values']) - 1) {
+										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'",';
+									} else {
+										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'"'."\n";
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return $row;
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function auth() {
+		#Формируем ссылку для запроса
+		$link='https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/auth.php?type=json';
+
+		#Неоюходимые данные для авторизации
+		$postData=array(
+			'USER_LOGIN'=>$this->configs['USER_LOGIN'],
+			'USER_HASH'=>$this->configs['API_KEY']
+		);
+
+		$Response = $this->cURLSession($link, $postData, 'CURLOPT_POST');
+
+		return $Response['auth'];
+	}
+
+	/**
+	 * @return mixed
+	 */
+	private function getLeadsOnID() {
+		#Формируем ссылку для запроса
+		$link='https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/leads/list?'.$this->parseDataToURL($this->leadsData, 'id');;
+
+		$Response = $this->cURLSession($link);
+		return $Response['leads'];
+	}
+
+	/**
+	 * @return mixed
+	 */
+	private function getContactsAndLeadsRelations() {
+		#Формируем ссылку для запроса
+		$link='https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/contacts/links?'.$this->parseDataToURL($this->leadsData, 'deals_link');
+
+		$Response = $this->cURLSession($link);
+		return $Response['links'];
+	}
+
+	/**
+	 * @return mixed
+	 */
+	private function getContactsOnID($data) {
+		#Формируем ссылку для запроса
+		$link='https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/contacts/list?'.$this->parseDataToURL($data, 'id');
+
+		$Response = $this->cURLSession($link);
+		return $Response['contacts'];
+	}
+
+	/**
+	 * @return mixed
+	 */
+	private function getCompaniesOnID($data) {
+		#Формируем ссылку для запроса
+		$link='https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/company/list?'.$this->parseDataToURL($data, 'id');
+
+		$Response = $this->cURLSession($link);
+		return $Response['contacts'];
+	}
+
+	private function getFields() {
+		$link='https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/accounts/current';
+
+		$Response = $this->cURLSession($link);
+		return $Response['account']['custom_fields']['leads'];
+	}
+
+	private function parseDataToURL($data, $keyword) {
+		$urlSrting = ''; #id[]=value1&id[]=value2&id[]=value3
+		for($i = 0; $i < count($data); $i++) {
+			if($i < count($data) - 1) {
+				$urlSrting .= $keyword.'[]='.$data[$i]."&";
+			} else $urlSrting .= $keyword.'[]='.$data[$i];
+		}
+
+		return $urlSrting;
+	}
+
+	/**
+	 * @param $link
+	 * @param array() $postData
+	 * @param bool|false $flag string (CURLOPT_POST | CURLOPT_CUSTOMREQUEST)
+	 * @return mixed
+	 */
+	private function cURLSession($link, $postData = array(), $flag = false) {
+		$curl=curl_init(); #Сохраняем дескриптор сеанса cURL
+
+		#Устанавливаем необходимые опции для сеанса cURL
+		curl_setopt($curl,CURLOPT_RETURNTRANSFER,true);
+		curl_setopt($curl,CURLOPT_USERAGENT,'amoCRM-API-client/1.0');
+		curl_setopt($curl,CURLOPT_URL,$link);
+		if($flag == 'CURLOPT_POST') {
+			curl_setopt($curl,CURLOPT_POST,true);
+			curl_setopt($curl,CURLOPT_POSTFIELDS,http_build_query($postData));
+		}elseif($flag == 'CURLOPT_CUSTOMREQUEST') {
+			curl_setopt($curl,CURLOPT_CUSTOMREQUEST,'POST');
+			curl_setopt($curl,CURLOPT_POSTFIELDS,json_encode($postData));
+			curl_setopt($curl,CURLOPT_HTTPHEADER,array('Content-Type: application/json'));
+		}
+		curl_setopt($curl,CURLOPT_HEADER,false);
+		curl_setopt($curl,CURLOPT_COOKIEFILE,dirname(__FILE__).'/cookie.txt'); #PHP>5.3.6 dirname(__FILE__) -> __DIR__
+		curl_setopt($curl,CURLOPT_COOKIEJAR,dirname(__FILE__).'/cookie.txt'); #PHP>5.3.6 dirname(__FILE__) -> __DIR__
+		curl_setopt($curl,CURLOPT_SSL_VERIFYPEER,0);
+		curl_setopt($curl,CURLOPT_SSL_VERIFYHOST,0);
+
+		$out=curl_exec($curl); #Инициируем запрос к API и сохраняем ответ в переменную
+		$code=curl_getinfo($curl,CURLINFO_HTTP_CODE); #Получим HTTP-код ответа сервера
+		curl_close($curl); #Заверашем сеанс cURL
+		$this->CheckCurlResponse($code);
+
+		$Response=json_decode($out,true);
+		return $Response=$Response['response'];
+	}
+
+	private function CheckCurlResponse($code) {
+		$code=(int)$code;
+		$errors=array(
+			301=>'Moved permanently',
+			400=>'Bad request',
+			401=>'Unauthorized',
+			403=>'Forbidden',
+			404=>'Not found',
+			500=>'Internal server error',
+			502=>'Bad gateway',
+			503=>'Service unavailable'
+		);
+		try
+		{
+			#Если код ответа не равен 200 или 204 - возвращаем сообщение об ошибке
+			if($code!=200 && $code!=204)
+				throw new Exception(isset($errors[$code]) ? $errors[$code] : 'Undescribed error',$code);
+		}
+		catch(Exception $E)
+		{
+			die('Ошибка: '.$E->getMessage().PHP_EOL.'Код ошибки: '.$E->getCode());
+		}
 	}
 }

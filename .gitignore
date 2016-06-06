@@ -1,8 +1,8 @@
 # phpstorm project files
 .idea
 
-# widget buil
+# widget build
 widget/widget.zip
 
-# Notes file
-notes.txt
+# Don`t upload derectories
+widget/only_for_develope/*
