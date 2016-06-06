@@ -1,124 +1,87 @@
-define(['jquery'], function($){
+define(['jquery', 'lib/components/base/modal'], function($,  Modal){
+    var CustomWidget = function () {
+    	var self = this;
 
-	var CustomWidget = function () {
-		var self = this,
-			system = self.system;
 
-		this.get_ccard_info = function() //Сбор информации из карточки контакта
-		{
-			if (self.system().area == 'ccard')
-			{
-				var phones = $('.card-cf-table-main-entity .phone_wrapper input[type=text]:visible'),
-					emails = $('.card-cf-table-main-entity .email_wrapper input[type=text]:visible'),
-					name = $('.card-top-name input').val(),
-					data = [],
-					c_phones=[],c_emails=[];
-				data.name = name;
-				for (var i=0;i<phones.length;i++)
-				{
-					if($(phones[i]).val().length>0){c_phones[i]=$(phones[i]).val();}
-				}
-				data['phones'] = c_phones;
-				for (var i=0;i<emails.length;i++)
-				{
-					if($(emails[i]).val().length>0){c_emails[i]=$(emails[i]).val();}
-				}
-				data['emails'] = c_emails;
-				console.log(data)
-				return data;
-			}
-			else
-			{return false;}
-		};
-
-		this.sendInfo = function (person_name, settings) { // Отправка собранной информации
-			self.crm_post(
-				'http://example.com/index.php',
-				{
-					// Передаем POST данные
-					name: person_name['name'],
-					phones: person_name['phones'],
-					emails: person_name['emails']
-				},
-				function(msg) {
-				},
-				'json'
-			);
-		};
 		this.callbacks = {
-			settings: function (){
+			render: function(){
+				console.log('render');
+				return true;
 			},
 			init: function(){
-				if (self.system().area == 'ccard')
-				{
-					self.contacts = self.get_ccard_info();
-				}
+				console.log('init');
 				return true;
 			},
 			bind_actions: function(){
-				if (self.system().area == 'ccard' || 'clist')
-				{
-					$('.ac-form-button').on('click', function(){
-						self.sendInfo(self.contacts);
-					});
-				}
 				return true;
 			},
-			render: function(){
-				var lang = self.i18n('userLang');
-				w_code = self.get_settings().widget_code; //в данном случае w_code='new-widget'
-				if(typeof(AMOCRM.data.current_card)!='undefined'){
-					if(AMOCRM.data.current_card.id == 0) {
-						return false;
-					} // не рендерить на contacts/add || leads/add
-				}
-				self.render_template({
-					caption:{
-						class_name:'js-ac-caption',
-						html:''
-					},
-					body:'',
-					render :  '\
-                   <div class="ac-form">\
-               <div id="js-ac-sub-lists-container">\
-               </div>\
-                   <div id="js-ac-sub-subs-container">\
-                   </div>\
-                   <div class="ac-form-button ac_sub">SEND</div>\
-                   </div>\
-               <div class="ac-already-subs"></div>\
-                   <link type="text/css" rel="stylesheet" href="/widgets/'+w_code+'/style.css" >'
-				});
+			settings: function(){
 				return true;
-			},
-			contacts: { selected: function() {    //Здесь описано поведение при мультивыборе контактов и клике на название виджета
-				var c_data = self.list_selected().selected;
-
-				$('#js-sub-lists-container').children().remove(); //Контейнер очищается затем в контейнер собираются элементы, выделенные в списке.контейнер - div блок виджета, отображается в правой колонке.
-				var names = [], // Массив имен
-					length = c_data.length; // Количество выбранных id (отсчет начинается с 0)
-				for (var i = 0; i < length; i++) {
-					names[i]= { emails : c_data[i].emails,
-						phones: c_data[i].phones};
-				}
-				console.log(names);
-				for (var i = 0; i < length; i++) {
-					$('#js-ac-sub-lists-container').append('<p>Email:'+names[i].emails+' Phone:'+names[i].phones+'</p>');
-				}
-				$(self.contacts).remove(); //очищаем переменную
-				self.contacts = names;
-			}
-			},
-			leads: { selected: function() {
-
-			}
 			},
 			onSave: function(){
-
+				alert('click');
 				return true;
-			}
+			},
+			destroy: function(){
+				
+			},
+			contacts: {
+					//select contacts in list and clicked on widget name
+					selected: function(){
+						console.log('contacts');
+					}
+				},
+			leads: {
+					//select leads in list and clicked on widget name
+					selected: function(){
+						var w_code = self.get_settings().widget_code;
+
+						var data =
+							'<h1 class="modal-body__title">Экспорт сделок</h1>' +
+							'<div class="export-settings modal-body__export-settings">' +
+								'<h2 class="export-settings__title">Настройки экспорта</h2>' +
+								'<form class="export-settings__form" action="#" method="post">' +
+									'<div class="form-checklist export-settings__form-checklist">' +
+										'<div class="form-checklist__title">Выберете поля для экспорта:</div>' +
+										'<label class="form-checklist__item">' +
+											'<input type="checkbox" name="field[]">' +
+											'Название' +
+										'</label>' +
+									'</div>' +
+									'<button type="submit" class="button-input">' +
+										'<span class="button-input-inner ">' +
+											'<span class="button-input-inner__text">Экспорт</span>' +
+										'</span>' +
+									'</button>' +
+								'</form>' +
+							'</div>' +
+							'<link type="text/css" rel="stylesheet" href="/widgets/'+w_code+'/style.css" >'
+
+						var modal = new Modal({
+							class_name: 'modal-window',
+							init: function ($modal_body) {
+								var $this = $(this);
+								$modal_body
+									.trigger('modal:loaded') //запускает отображение модального окна
+									.html(data)
+									.trigger('modal:centrify')  //настраивает модальное окно
+									.append('<span class="modal-body__close"><span class="icon icon-modal-close"></span></span>');
+							},
+							destroy: function () {
+
+							}
+						});
+					}
+				},
+			tasks: {
+					//select taks in list and clicked on widget name
+					selected: function(){
+						console.log('tasks');
+					}
+				}
 		};
 		return this;
-	};
-	return CustomWidget;
+    };
+
+return CustomWidget;
 });

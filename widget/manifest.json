@@ -5,7 +5,7 @@
             "short_description": "widget.short_description",
             "code": "my_export_widget",
             "secret_key": "8ea93762ea86d795f3cf42b21c37553b7b3a37682f218b6ef3a4de7727a67ca3",
-            "version": "1.0.2",
+            "version": "1.0.5",
             "interface_version": 2,
             "init_once": false,
             "locale":[
