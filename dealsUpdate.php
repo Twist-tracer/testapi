@@ -2,7 +2,7 @@
 foreach($deals_fields as $deal_field) {
     $custom_fields[] = array(
         'id' => $deal_field['id'],
-        'values' => array_rand($deal_field['enums'], mt_rand(1, 3))
+        'values' => array_rand($deal_field['enums'], mt_rand(0, 2))
     );
 }
 
