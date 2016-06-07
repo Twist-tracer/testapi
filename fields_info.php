@@ -22,4 +22,3 @@ if(isset($account['custom_fields'],$account['custom_fields']['contacts']))
 else
 	die('Невозможно получить дополнительные поля');
 $custom_fields=isset($fields) ? $fields : false;
-?>

@@ -1,6 +1,9 @@
 <?php
-function CheckCurlResponse($code)
-{
+$max = 200; #По сколько добавлять
+$limit_rows = 500; #По сколько по сколько обновлять
+$row_count = empty($_POST['row_count']) ? 500 : $_POST['row_count']; #Сколько сделок обновить
+
+function CheckCurlResponse($code) {
 	$code=(int)$code;
 	$errors=array(
 		301=>'Moved permanently',
@@ -25,27 +28,22 @@ function CheckCurlResponse($code)
 }
 
 if(isset($_POST['number'])) {
-	$deals = array(); // Массив со сделками
-	// Заполняем
-	for($i = 0; $i < $_POST['number']; $i++) {
-		$deals[$i]['name'] = "Сделка № ".($i + 1);
-	}
 
-	$companies = array(); // Массив компаний
+	$deals_data = array(); // Массив со сделками
 	// Заполняем
-	for($i = 0; $i < $_POST['number']; $i++) {
-		$companies[$i]['name'] = "Компания № ".($i + 1);
+	for ($i = 0; $i < $_POST['number']; $i++) {
+		$deals_data[$i]['name'] = "Сделка № " . ($i + 1);
 	}
 
 	$contacts_data = array(); // Массив контактов
 	$positions = array('Ген директор', 'Менеджер', 'Продавец', 'Управляющий', 'Оператор'); // Массив должностей
 	// Заполняем
-	for($i = 0; $i < $_POST['number']; $i++) {
-		$contacts_data[$i]['name'] = "Контакт № ".($i + 1);
+	for ($i = 0; $i < $_POST['number']; $i++) {
+		$contacts_data[$i]['name'] = "Контакт № " . ($i + 1);
 		$contacts_data[$i]['position'] = $positions[mt_rand(0, 4)];
-		$contacts_data[$i]['phone'] = mt_rand(8905, 8999).mt_rand(000, 999).mt_rand(00, 99).mt_rand(00, 99);
-		$contacts_data[$i]['email'] = "contact".($i + 1)."@mail.ru";
-		$contacts_data[$i]['im'] = "contact".($i + 1)."@jabber.ru";
-		$contacts_data[$i]['company'] = $companies[$i]['name'];
+		$contacts_data[$i]['phone'] = mt_rand(8905, 8999) . mt_rand(100, 999) . mt_rand(10, 99) . mt_rand(10, 99);
+		$contacts_data[$i]['email'] = "contact" . ($i + 1) . "@mail.ru";
+		$contacts_data[$i]['im'] = "contact" . ($i + 1) . "@jabber.ru";
+		$contacts_data[$i]['company'] = "Компания № " . ($i + 1);
 	}
 }

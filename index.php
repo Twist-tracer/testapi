@@ -33,7 +33,7 @@
 						<option value="1">1</option>
 						<option value="5">5</option>
                         <option value="100">100</option>
-                        <option value="250">250</option>
+                        <option value="200">200</option>
                         <option value="500">500</option>
                         <option value="1000">1000</option>
                     </select>
@@ -73,10 +73,11 @@
 				</div>
 			</form>
 			<hr>
-			<h2>Обновить значение поля у всех сделок</h2>
+			<h2>Обновить значение полей у сделок</h2>
 			<form action="handler3.php" method="post">
 				<div>
-					<button type="submit" name="refresh_fields">Обновить</button>
+					<button type="submit" name="refresh_fields">Обновить 1000</button>
+					<input type="hidden" name="row_count" value="1000">
 				</div>
 			</form>
 		</div>

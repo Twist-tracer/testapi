@@ -1,4 +1,7 @@
 <?php
+$start_time = microtime(true);
+
+set_time_limit(0);
 error_reporting(-1);
 header('Content-Type: text/html; charset=utf-8');
 $root=__DIR__.DIRECTORY_SEPARATOR;
@@ -8,4 +11,3 @@ require $root.'deals_add.php'; #Здесь будет происходить д�
 require $root.'account_current.php'; #Здесь мы будем получать информацию об аккаунте
 require $root.'fields_info.php'; #Получим информацию о полях
 require $root.'contacts_add.php'; #Здесь будет происходить добавление контакта
-?>

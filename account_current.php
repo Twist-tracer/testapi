@@ -23,5 +23,4 @@ $Response=json_decode($out,true);
 $account=$Response['response']['account'];
 
 // Кастомные поля у сделок
-$deals_fields = $account['custom_fields']['leads'];
-
+if(isset($account['custom_fields']['leads'])) $dealsFields = $account['custom_fields']['leads'];

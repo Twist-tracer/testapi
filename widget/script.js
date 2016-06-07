@@ -61,8 +61,8 @@ define(['jquery'], function($){
 			leads: {
 				//select leads in list and clicked on widget name
 				selected: function(){
-					var l_data = self.list_selected().selected;
-					var leads = []; // массив с id сделок
+					var l_data = self.list_selected().selected,
+						leads = []; // массив с id сделок
 
 					for(var i = 0; i < l_data.length; i++) {
 						leads[i] = l_data[i].id
