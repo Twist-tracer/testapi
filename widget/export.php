@@ -4,11 +4,12 @@
     $configs = array(
         'USER_LOGIN' => 'twist.tracer@gmail.com',
         'API_KEY' => '3152adcab5a33956a198f997412f4310',
-        'SUB_DOMAIN' => 'bogdanov'
+        'SUB_DOMAIN' => 'bogdanov',
+        'EXPORT_FILE' => 'export/amocrm_leads.csv'
     );
 
     $widget = new MyExportWidget($_GET['data'], $configs);
 
-    header('Content-type: text/html; charset="utf-8"');
-    print_r($widget->generateCSVFile());
-?>
+    if($widget->generateCSVFile()) {
+        $widget->file_force_download($configs['EXPORT_FILE']);
+    }
