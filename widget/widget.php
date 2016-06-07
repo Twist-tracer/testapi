@@ -255,7 +255,7 @@ class MyExportWidget
 		$this->CheckCurlResponse($code);
 
 		$Response=json_decode($out,true);
-		return $Response=$Response['response'];
+		return $Response['response'];
 	}
 
 	private function CheckCurlResponse($code) {

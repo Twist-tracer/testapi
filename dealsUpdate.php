@@ -69,7 +69,6 @@ function getDealsList($subdomain, $limit_rows, $limit_offset = 0) {
     $Response=$Response['response'];
 
     return $Response['leads'];
-
 }
 
 function sendSetFieldsRequest($subdomain, $set) {
