@@ -13,9 +13,15 @@ class MyExportWidget
 	}
 
 	public function generateCSVFile() {
+		// 1) Собираем всю необходимую информацию
 		$collection = $this->collectInformstion();
 
-		return $this->generateCSVString($collection);
+		// 2) Собираем строку и пишем ее в CSV файл. Возвращаем результат
+		if(!file_put_contents($this->configs['EXPORT_FILE'], $this->generateCSVString($collection)))
+			return false;
+		else {
+			return true;
+		}
 	}
 
 	private function collectInformstion() {
@@ -113,7 +119,7 @@ class MyExportWidget
 									}
 								}
 							}
-						}
+						} else $row .= '"";';
 						$row .= ';';
 					} else {
 						if($data["fields"][$j]['name'] == $data["leads"][$i]['custom_fields'][$j]['name']) {
@@ -124,16 +130,16 @@ class MyExportWidget
 									if($t < count($data["leads"][$i]['custom_fields'][$j]['values']) - 1) {
 										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'",';
 									} else {
-										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'"'."\n";
+										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'"'."\r\n";
 									}
 								}
 							}
-						}
+						} else $row .= '""'."\r\n";
 					}
 				}
 			}
 		}
-		return $row;
+		return iconv('UTF-8','Windows-1251',$header."\r\n".$row);
 	}
 
 	/**
@@ -273,6 +279,28 @@ class MyExportWidget
 		catch(Exception $E)
 		{
 			die('Ошибка: '.$E->getMessage().PHP_EOL.'Код ошибки: '.$E->getCode());
+		}
+	}
+
+	public function file_force_download($file) {
+		if (file_exists($file)) {
+			// сбрасываем буфер вывода PHP, чтобы избежать переполнения памяти выделенной под скрипт
+			// если этого не сделать файл будет читаться в память полностью!
+			if (ob_get_level()) {
+				ob_end_clean();
+			}
+			// заставляем браузер показать окно сохранения файла
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename=' . basename($file));
+			header('Content-Transfer-Encoding: binary');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($file));
+			// читаем файл и отправляем его пользователю
+			readfile($file);
+			exit;
 		}
 	}
 }
