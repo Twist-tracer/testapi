@@ -25,6 +25,8 @@ class MyExportWidget
 	}
 
     /**
+     * Возвращает отформатированную строку для записи в cvs
+     *
      * Авторизовываемся
      * Получаем информацию о сделках по их ID
      * Получаем данные информацию о связанных контактах по ID сделок
@@ -81,7 +83,7 @@ class MyExportWidget
      * data['contacts'][]['name] - Имя связанного контакта
      * data['companies'][]['name] - Имя связанной компании
      *
-     * @return string
+     * @return string Отформатированнная строка для cvs
      */
 	private function generate_csv_string($data) {
 		# Собираем заглавную строчку
@@ -154,6 +156,7 @@ class MyExportWidget
 	}
 
 	/**
+     * Аторизация
 	 * @return bool
 	 */
 	private function auth() {
@@ -172,6 +175,7 @@ class MyExportWidget
 	}
 
     /**
+     * Получает данные по селакам, контактам, компаниям по их id
      * @param $data array
      * @param $type string (leads|contacts|companies)
      *
@@ -248,6 +252,7 @@ class MyExportWidget
 	}
 
 	/**
+     * Отправляет запрос на сервер
 	 * @param $link
 	 * @param $post_data array
 	 * @param bool|false $type string (CURLOPT_POST | CURLOPT_CUSTOMREQUEST)
@@ -285,6 +290,11 @@ class MyExportWidget
 		return $response['response'];
 	}
 
+    /**
+     * Проверяет код ответа сервера
+     * В случае ошибки выбрасывает исключение
+     * @param $code - код ответа сервера
+     */
 	private function сheck_сurl_response($code) {
 		$code = (int)$code;
 		$errors = [
@@ -306,6 +316,10 @@ class MyExportWidget
 		}
 	}
 
+    /**
+     * Отправляет заголовки для скачивания файла
+     * @param $file - путь до сгенерированного файла
+     */
 	public function file_force_download($file) {
 		if (file_exists($file)) {
 			// сбрасываем буфер вывода PHP, чтобы избежать переполнения памяти выделенной под скрипт
