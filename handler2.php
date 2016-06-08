@@ -5,4 +5,3 @@ $root=__DIR__.DIRECTORY_SEPARATOR;
 require $root.'prepare.php'; #Здесь будут производиться подготовительные действия, объявления функций и т.д.
 require $root.'auth.php'; #Здесь будет происходить авторизация пользователя
 require $root.'field_add.php'; #Здесь будет происходить добавление поля
-?>

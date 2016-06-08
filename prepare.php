@@ -1,7 +1,6 @@
 <?php
 $max = 200; #По сколько добавлять
 $limit_rows = 500; #По сколько обновлять
-$row_count = empty($_POST['row_count']) ? 500 : $_POST['row_count']; #Сколько сделок обновить
 
 //Заполняем массивы сделок и контактов
 if(isset($_POST['number'])) {
@@ -25,8 +24,8 @@ if(isset($_POST['number'])) {
 }
 
 function сheck_сurl_response($code) {
-	$code=(int)$code;
-	$errors=[
+	$code = (int)$code;
+	$errors = [
 		301=>'Moved permanently',
 		400=>'Bad request',
 		401=>'Unauthorized',
@@ -55,7 +54,7 @@ function сheck_сurl_response($code) {
  * @return mixed
  */
 function send_request($link, $post_data = [], $type = FALSE) {
-	$curl=curl_init(); #Сохраняем дескриптор сеанса cURL
+	$curl = curl_init(); #Сохраняем дескриптор сеанса cURL
 
 	#Устанавливаем необходимые опции для сеанса cURL
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
@@ -64,7 +63,7 @@ function send_request($link, $post_data = [], $type = FALSE) {
 	if($type == 'CURLOPT_POST') {
 		curl_setopt($curl, CURLOPT_POST, TRUE);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post_data));
-	}elseif($type == 'CURLOPT_CUSTOMREQUEST') {
+	} elseif($type == 'CURLOPT_CUSTOMREQUEST') {
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
 		curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($post_data));
 		curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
@@ -75,11 +74,12 @@ function send_request($link, $post_data = [], $type = FALSE) {
 	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
 
-	$out=curl_exec($curl); #Инициируем запрос к API и сохраняем ответ в переменную
-	$code=curl_getinfo($curl, CURLINFO_HTTP_CODE); #Получим HTTP-код ответа сервера
+	$out = curl_exec($curl); #Инициируем запрос к API и сохраняем ответ в переменную
+	$code = curl_getinfo($curl, CURLINFO_HTTP_CODE); #Получим HTTP-код ответа сервера
 	curl_close($curl); #Заверашем сеанс cURL
 	сheck_сurl_response($code); #Проверяем на ошибки
 
-	$response=json_decode($out, FALSE);
+	$response = json_decode($out, TRUE);
+
 	return $response['response'];
 }

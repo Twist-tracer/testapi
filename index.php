@@ -76,8 +76,7 @@
 			<h2>Обновить значение полей у сделок</h2>
 			<form action="handler3.php" method="post">
 				<div>
-					<button type="submit" name="refresh_fields">Обновить 1000</button>
-					<input type="hidden" name="row_count" value="1000">
+					<button type="submit" name="refresh_fields">Обновить все</button>
 				</div>
 			</form>
 		</div>

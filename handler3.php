@@ -8,4 +8,4 @@ $root=__DIR__.DIRECTORY_SEPARATOR;
 require $root.'prepare.php'; #Здесь будут производиться подготовительные действия, объявления функций и т.д.
 require $root.'auth.php'; #Здесь будет происходить авторизация пользователя
 require $root.'account_current.php'; #Здесь мы будем получать информацию об аккаунте
-require $root.'dealsUpdate.php'; #Обновляем сделки
+require $root.'deals_fields_update.php'; #Обновляем сделки
