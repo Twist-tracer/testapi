@@ -18,7 +18,7 @@ function auth($user, $subdomain) {
 	#Формируем ссылку для запроса
 	$link='https://'.$subdomain.'.amocrm.ru/private/api/auth.php?type=json';
 
-	$Response = send_request($link, $user, 'CURLOPT_POST');
+	$response = send_request($link, $user, 'CURLOPT_POST');
 
-	return isset($Response['auth']) ? TRUE : FALSE; #Флаг авторизации доступен в свойстве "auth"
+	return isset($response['auth']) ? TRUE : FALSE; #Флаг авторизации доступен в свойстве "auth"
 }
