@@ -25,16 +25,16 @@ if(count($contacts_data) > $max) {
 		echo "Сделки успешно добавлены за ".(microtime(TRUE) - $start_time)." сек.";
 }
 
-function get_contact_by_index($contacts_data, $deals_id, $custom_fields, $iter) {
+function get_contact_by_index($contacts_data, $deals_id, $custom_fields, $i) {
 	$contact = [
-		'name' => $contacts_data[$iter]['name'],
-		'linked_leads_id' => [$deals_id[$iter]['id']],
+		'name' => $contacts_data[$i]['name'],
+		'linked_leads_id' => [$deals_id[$i]['id']],
 		'custom_fields' => [
 			[
 				'id'=>$custom_fields['EMAIL'],
 				'values'=> [
 					[
-						'value'=>$contacts_data[$iter]['email'],
+						'value'=>$contacts_data[$i]['email'],
 						'enum'=>'WORK'
 					]
 				]
@@ -42,14 +42,14 @@ function get_contact_by_index($contacts_data, $deals_id, $custom_fields, $iter) 
 		]
 	];
 
-	if(!empty($contacts_data[$iter]['company']))
-		$contact += ['company_name'=>$contacts_data[$iter]['company']];
-	if(!empty($contacts_data[$iter]['position'])) {
+	if(!empty($contacts_data[$i]['company']))
+		$contact += ['company_name'=>$contacts_data[$i]['company']];
+	if(!empty($contacts_data[$i]['position'])) {
         $contact['custom_fields'][] = [
             'id'=>$custom_fields['POSITION'],
             'values' => [
                 [
-                    'value'=>$contacts_data[$iter]['position']
+                    'value'=>$contacts_data[$i]['position']
                 ]
             ]
         ];
@@ -59,7 +59,7 @@ function get_contact_by_index($contacts_data, $deals_id, $custom_fields, $iter) 
             'id'=>$custom_fields['PHONE'],
             'values'=>[
                 [
-                    'value'=>$contacts_data[$iter]['phone'],
+                    'value'=>$contacts_data[$i]['phone'],
                     'enum'=>'OTHER'
                 ]
             ]
@@ -70,7 +70,7 @@ function get_contact_by_index($contacts_data, $deals_id, $custom_fields, $iter) 
             'id'=>$custom_fields['IM'],
             'values'=>[
                 [
-                    'value'=>$contacts_data[$iter]['im'],
+                    'value'=>$contacts_data[$i]['im'],
                     'enum'=>'JABBER'
                 ]
             ]
