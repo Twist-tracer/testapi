@@ -6,3 +6,7 @@ widget/widget.zip
 
 # Don`t upload derectories
 widget/only_for_develope/*
+widget/export
+
+# Don`t send cookie files
+cookie.txt
