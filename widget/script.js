@@ -3,7 +3,6 @@ define(['jquery'], function($){
     	var self = this;
 
 		this.sendInfo = function(url, data) { // Отправка собранной информации
-
 			url += '?data=' + JSON.stringify(data);
 
 			window.open(url);
@@ -45,7 +44,6 @@ define(['jquery'], function($){
 				return true;
 			},
 			onSave: function(){
-				alert('click');
 				return true;
 			},
 			destroy: function(){
@@ -71,7 +69,7 @@ define(['jquery'], function($){
 				}
 			},
 			tasks: {
-					//select taks in list and clicked on widget name
+					//select tasks in list and clicked on widget name
 					selected: function(){
 						console.log('tasks');
 					}
