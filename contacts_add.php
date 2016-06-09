@@ -7,7 +7,7 @@ if(count($contacts_data) > $max) {
 			$set['request']['contacts']['add'][]= get_contact_by_index($contacts_data, $deals_id, $custom_fields, $i);
 
 			#На каждой $max итерации делаем запрос на добавление сделок, чистим $set
-            send_сontacts_request($subdomain, $set);
+            send_contacts_request($subdomain, $set);
 			unset($set);
             sleep(1); #Ждем секунду
 		} else
@@ -21,10 +21,18 @@ if(count($contacts_data) > $max) {
 		$set['request']['contacts']['add'][] = get_contact_by_index($contacts_data, $deals_id, $custom_fields, $i);
 	}
 
-	if(send_сontacts_request($subdomain, $set));
+	if(send_contacts_request($subdomain, $set));
 		echo "Сделки успешно добавлены за ".(microtime(TRUE) - $start_time)." сек.";
 }
 
+/**
+ * Получает один контакт по итерации
+ * @param $contacts_data
+ * @param $deals_id
+ * @param $custom_fields
+ * @param $i
+ * @return array
+ */
 function get_contact_by_index($contacts_data, $deals_id, $custom_fields, $i) {
 	$contact = [
 		'name' => $contacts_data[$i]['name'],
@@ -80,7 +88,7 @@ function get_contact_by_index($contacts_data, $deals_id, $custom_fields, $i) {
 	return $contact;
 }
 
-function send_сontacts_request($subdomain, $set) {
+function send_contacts_request($subdomain, $set) {
 	#Формируем ссылку для запроса
 	$link='https://'.$subdomain.'.amocrm.ru/private/api/v2/json/contacts/set';
 
