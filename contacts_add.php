@@ -25,10 +25,10 @@ if(count($contacts_data) > $max) {
 		echo "Сделки успешно добавлены за ".(microtime(TRUE) - $start_time)." сек.";
 }
 
-function get_contact_by_index($contacts_data, $dealsID, $custom_fields, $iter) {
+function get_contact_by_index($contacts_data, $deals_id, $custom_fields, $iter) {
 	$contact = [
 		'name' => $contacts_data[$iter]['name'],
-		'linked_leads_id' => [$dealsID[$iter]['id']],
+		'linked_leads_id' => [$deals_id[$iter]['id']],
 		'custom_fields' => [
 			[
 				'id'=>$custom_fields['EMAIL'],
