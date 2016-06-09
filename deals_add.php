@@ -11,9 +11,9 @@ if(count($deals_data) > $max) {
             # На каждой $max итерации делаем запрос на добавление сделок, чистим $set
             $deals_id = array_merge($deals_id, send_leads_request($link, $set));
             unset($set);
-            sleep(1); #Ждем секунду
+        } else {
+            $set['request']['leads']['add'][] = $deals_data[$i];
         }
-    else $set['request']['leads']['add'][] = $deals_data[$i];
     }
 } else {
     foreach($deals_data as $deal_data) {

@@ -2,8 +2,7 @@
 /**
  * Class MyExportWidget
  */
-class MyExportWidget
-{
+class MyExportWidget {
 	private $_leads_data;
 	private $_configs;
 
@@ -86,7 +85,6 @@ class MyExportWidget
      * @return string Отформатированнная строка для cvs
      */
 	private function generate_csv_string($data) {
-		# Собираем заглавную строчку
 		$header = '"Название сделки";"Дата создания сделки";"Теги";"Имя связанного контакта";"Название связанной компании";';
 
 		if(count($data["fields"]) != 0) {
@@ -97,7 +95,6 @@ class MyExportWidget
 			}
 		}
 
-		# А теперь и все остальные
 		$row = "";
 		for($i = 0; $i < count($data["leads"]); $i++) {
 			$row .= '"'.$data["leads"][$i]['name'].'";';
@@ -115,10 +112,9 @@ class MyExportWidget
 
 			}
 			$row .= '"'.$data["contacts"][$i]['name'].'";';
-			$row .= '"'.$data["companies"][$i]['name'].'";';
-			if(count($data["fields"]) != 0) {
-				for($j = 0; $j < count($data["fields"]); $j++) {
-
+            if(count($data["fields"]) != 0) {
+                $row .= '"'.$data["companies"][$i]['name'].'";';
+                for($j = 0; $j < count($data["fields"]); $j++) {
 					if($j < count($data["fields"]) - 1) {
 						if($data["fields"][$j]['name'] == $data["leads"][$i]['custom_fields'][$j]['name']) {
 							if(count($data["leads"][$i]['custom_fields'][$j]['values']) == 0) {
@@ -150,13 +146,15 @@ class MyExportWidget
 						} else $row .= '""'."\r\n";
 					}
 				}
-			}
+			} else {
+                $row .= '"'.$data["companies"][$i]['name'].'"'."\r\n";
+            }
 		}
 		return iconv('UTF-8','Windows-1251',$header."\r\n".$row);
 	}
 
 	/**
-     * Аторизация
+     * Авторизация
 	 * @return bool
 	 */
 	private function auth() {

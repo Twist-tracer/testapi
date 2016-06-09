@@ -1,25 +1,27 @@
 <?php
 $max = 200; #По сколько добавлять
-$limit_rows = 500; #По сколько обновлять
+$limit_rows = 500; #По сколько получать
 
-//Заполняем массивы сделок и контактов
+#Заполняем массивы сделок и контактов
 if(isset($_POST['number'])) {
 	$deals_data = []; #Массив со сделками
-	// Заполняем
+
 	for ($i = 0; $i < $_POST['number']; $i++) {
 		$deals_data[$i]['name'] = "Сделка № " . ($i + 1);
 	}
 
-	$contacts_data = []; // Массив контактов
+	$contacts_data = []; #Массив контактов
 	$positions = ['Ген директор', 'Менеджер', 'Продавец', 'Управляющий', 'Оператор']; #Массив должностей
-	// Заполняем
+
 	for ($i = 0; $i < $_POST['number']; $i++) {
-		$contacts_data[$i]['name'] = "Контакт № " . ($i + 1);
-		$contacts_data[$i]['position'] = $positions[mt_rand(0, 4)];
-		$contacts_data[$i]['phone'] = mt_rand(8905, 8999) . mt_rand(100, 999) . mt_rand(10, 99) . mt_rand(10, 99);
-		$contacts_data[$i]['email'] = "contact" . ($i + 1) . "@mail.ru";
-		$contacts_data[$i]['im'] = "contact" . ($i + 1) . "@jabber.ru";
-		$contacts_data[$i]['company'] = "Компания № " . ($i + 1);
+		$contacts_data[] = [
+            'name' => "Контакт № " . ($i + 1),
+            'position' =>  $positions[mt_rand(0, 4)],
+            'phone' => mt_rand(8905, 8999) . mt_rand(100, 999) . mt_rand(10, 99) . mt_rand(10, 99),
+            'email' => "contact" . ($i + 1) . "@mail.ru",
+            'im' => "contact" . ($i + 1) . "@jabber.ru",
+            'company' => "Компания № " . ($i + 1)
+        ];
 	}
 }
 
@@ -78,6 +80,8 @@ function send_request($link, $post_data = [], $type = FALSE) {
 	$code = curl_getinfo($curl, CURLINFO_HTTP_CODE); #Получим HTTP-код ответа сервера
 	curl_close($curl); #Заверашем сеанс cURL
 	сheck_сurl_response($code); #Проверяем на ошибки
+
+    sleep(1); #Ждем секунду
 
 	$response = json_decode($out, TRUE);
 
