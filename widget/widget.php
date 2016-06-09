@@ -4,12 +4,12 @@
  */
 class MyExportWidget
 {
-	private $leads_data;
-	private $configs;
+	private $_leads_data;
+	private $_configs;
 
 	public function __construct($data, $configs) {
-		$this->leads_data = json_decode($data, true);
-		$this->configs = $configs;
+		$this->_leads_data = json_decode($data, true);
+		$this->_configs = $configs;
 	}
 
     /**
@@ -21,7 +21,7 @@ class MyExportWidget
 	public function generate_csv_file() {
 		$collection = $this->collect_information();
 
-        return !file_put_contents($this->configs['EXPORT_FILE'], $this->generate_csv_string($collection)) ? FALSE : TRUE;
+        return !file_put_contents($this->_configs['EXPORT_FILE'], $this->generate_csv_string($collection)) ? FALSE : TRUE;
 	}
 
     /**
@@ -43,7 +43,7 @@ class MyExportWidget
      */
 	private function collect_information() {
 		if($this->auth()) {
-			$leads = $this->get_data_on_id($this->leads_data, 'leads');
+			$leads = $this->get_data_on_id($this->_leads_data, 'leads');
 			if(!empty($leads)) {
 				$cl_links = $this->get_contacts_and_leads_relations(); #$cl_links[]['contact_id'] - ID связанного контакта
 
@@ -161,12 +161,12 @@ class MyExportWidget
 	 */
 	private function auth() {
 		#Формируем ссылку для запроса
-		$link='https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/auth.php?type=json';
+		$link='https://'.$this->_configs['SUB_DOMAIN'].'.amocrm.ru/private/api/auth.php?type=json';
 
 		#Неоюходимые данные для авторизации
 		$postData=array(
-			'USER_LOGIN'=>$this->configs['USER_LOGIN'],
-			'USER_HASH'=>$this->configs['API_KEY']
+			'USER_LOGIN'=>$this->_configs['USER_LOGIN'],
+			'USER_HASH'=>$this->_configs['API_KEY']
 		);
 
 		$response = $this->send_request($link, $postData, 'CURLOPT_POST');
@@ -183,15 +183,16 @@ class MyExportWidget
      */
     private function get_data_on_id($data, $type) {
         $link = ""; # Cсылка для запроса
+        $return = ""; #Ключ для возвращаемого массива
         switch($type) {
             case 'leads':
-                $link = 'https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/leads/list?'.$this->parse_data_to_url($data, 'id');
+                $link = 'https://'.$this->_configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/leads/list?'.$this->parse_data_to_url($data, 'id');
                 break;
             case 'contacts':
-                $link = 'https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/contacts/list?'.$this->parse_data_to_url($data, 'id');
+                $link = 'https://'.$this->_configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/contacts/list?'.$this->parse_data_to_url($data, 'id');
                 break;
             case 'companies':
-                $link = 'https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/company/list?'.$this->parse_data_to_url($data, 'id');
+                $link = 'https://'.$this->_configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/company/list?'.$this->parse_data_to_url($data, 'id');
                 break;
         }
 
@@ -199,14 +200,14 @@ class MyExportWidget
 
         switch($type) {
             case 'leads':
-                return $response['leads'];
+                $return = 'leads';
                 break;
             case 'contacts':
             case 'companies':
-                return $response['contacts'];
+                $return = 'contacts';
                 break;
         }
-        return false; # Если указан неверный формат $type;
+        return !empty($response[$return]) ? $response[$return] : FALSE; # Если указан неверный формат $type;
 	}
 
 	/**
@@ -215,7 +216,7 @@ class MyExportWidget
 	 */
 	private function get_contacts_and_leads_relations() {
 		#Формируем ссылку для запроса
-		$link='https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/contacts/links?'.$this->parse_data_to_url($this->leads_data, 'deals_link');
+		$link='https://'.$this->_configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/contacts/links?'.$this->parse_data_to_url($this->_leads_data, 'deals_link');
 
 		$response = $this->send_request($link);
 		return $response['links'];
@@ -227,7 +228,7 @@ class MyExportWidget
      * @return array
     */
 	private function get_fields() {
-		$link='https://'.$this->configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/accounts/current';
+		$link='https://'.$this->_configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/accounts/current';
 
 		$response = $this->send_request($link);
 		return $response['account']['custom_fields']['leads'];

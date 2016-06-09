@@ -34,12 +34,11 @@ define(['jquery'], function($){
 				return true;
 			},
 			bind_actions: function(){
-				if (self.system().area == 'llist') {
-					$('#leads-export').on('click', function() {
-						var url = 'http://amocrm.loc/widget/export.php';
-						self.sendInfo(url, self.leads);
-					});
-				}
+                $('#leads-export').on('click', function() {
+                    var url = 'http://amocrm.loc/widget/export.php';
+                    self.sendInfo(url, self.leads);
+                });
+
 				return true;
 			},
 			settings: function(){

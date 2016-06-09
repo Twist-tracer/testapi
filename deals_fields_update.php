@@ -17,7 +17,7 @@ while(TRUE) {
     if($i == 0) { #Запоминаем первую партию сделок которые будем обновлять
         $rem = $deals_list[0]['id'];
         $i++;
-    } else { #Если вернулись те же сделки прерываем цикл
+    } else { #Если вернулись те же сделки выходим из цикла
         $result = array_filter($deals_list,function($a){
             return $a["id"] == $GLOBALS['rem'];
         });
@@ -31,14 +31,19 @@ while(TRUE) {
 
 echo "Сделки успешно обновлены за ".(microtime(TRUE) - $start_time)." сек.";
 
+/**
+ * Возвращает массив кстомных полей с новыми значениями
+ * @param $deals_fields
+ * @return array
+ */
 function get_сustom_fields($deals_fields) {
     $custom_fields = []; # Массив с кастомными полями
 
     foreach($deals_fields as $deal_field) {
-        $custom_fields[] = array(
+        $custom_fields[] = [
             'id' => $deal_field['id'],
             'values' => array_rand($deal_field['enums'], mt_rand(1, 3))
-        );
+        ];
     }
     return $custom_fields;
 }
@@ -50,7 +55,7 @@ function get_сustom_fields($deals_fields) {
  * @param int $limit_offset
  * @return mixed
  */
-function get_deals_list($subdomain, $limit_rows, $limit_offset = 0) {
+function get_deals_list($subdomain, $limit_rows) {
     #Формируем ссылку для запроса
     $link='https://'.$subdomain.'.amocrm.ru/private/api/v2/json/leads/list?limit_rows='.$limit_rows;
 
