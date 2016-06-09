@@ -60,13 +60,10 @@ class MyExportWidget {
                 $contacts = $this->get_data_on_id($contacts_data, 'contacts');
                 $companies = $this->get_data_on_id($companies_data, 'companies');
 
-				$fields = $this->get_fields();
-
 				return [
 					"leads" => $leads,
 					"contacts" => $contacts,
 					"companies" => $companies,
-					"fields" => $fields
 				];
 			}
 		} else die('Авторизация не удалась');
@@ -86,71 +83,69 @@ class MyExportWidget {
      */
 	private function generate_csv_string($data) {
 		$header = '"Название сделки";"Дата создания сделки";"Теги";"Имя связанного контакта";"Название связанной компании";';
-
-		if(count($data["fields"]) != 0) {
-			for($i = 0; $i < count($data["fields"]); $i++) {
-				if($i < count($data["fields"]) - 1)
-					$header .= '"'.$data["fields"][$i]['name'].'";';
-				else $header .= '"'.$data["fields"][$i]['name'].'"';
-			}
-		}
-
 		$row = "";
+
+        #Собераем остальные строчки
 		for($i = 0; $i < count($data["leads"]); $i++) {
-			$row .= '"'.$data["leads"][$i]['name'].'";';
-			$row .= '"'.date("d:m:Y H:i:s", $data["leads"][$i]['date_create']).'";';
-			if(count($data["leads"][$i]['tags']) == 0) {
+            $lead = $data["leads"][$i]; #Текущая сделка
+            $contact = $data["contacts"][$i]; #Текущий контакт
+            $company =  $data["companies"][$i]; #Текущая компания
+
+			$row .= '"'.$lead['name'].'";'; #Имя сделки
+			$row .= '"'.date("d:m:Y H:i:s", $lead['date_create']).'";'; #Дата создания
+			if(count($lead['tags']) == 0) { #Теги сделки
 				$row .= '"";';
 			} else {
-				for($j = 0; $j < count($data["leads"][$i]['tags']); $j++) {
-					if($j < count($data["leads"][$i]['tags']) - 1) {
-						$row .= '"'.$data["leads"][$i]['tags'].'",';
+				for($j = 0; $j < count($lead['tags']); $j++) {
+					if($j < count($lead['tags']) - 1) {
+						$row .= '"'.$lead['tags'].'",';
 					} else {
-						$row .= '"'.$data["leads"][$i]['tags'].'";';
+						$row .= '"'.$lead['tags'].'";';
 					}
 				}
-
 			}
-			$row .= '"'.$data["contacts"][$i]['name'].'";';
-            if(count($data["fields"]) != 0) {
-                $row .= '"'.$data["companies"][$i]['name'].'";';
-                for($j = 0; $j < count($data["fields"]); $j++) {
-					if($j < count($data["fields"]) - 1) {
-						if($data["fields"][$j]['name'] == $data["leads"][$i]['custom_fields'][$j]['name']) {
-							if(count($data["leads"][$i]['custom_fields'][$j]['values']) == 0) {
-								$row .= '"";';
-							} else {
-								for($t = 0; $t < count($data["leads"][$i]['custom_fields'][$j]['values']); $t++) {
-									if($t < count($data["leads"][$i]['custom_fields'][$j]['values']) - 1) {
-										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'",';
-									} else {
-										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'"';
-									}
-								}
-							}
-						} else $row .= '"";';
-						$row .= ';';
-					} else {
-						if($data["fields"][$j]['name'] == $data["leads"][$i]['custom_fields'][$j]['name']) {
-							if(count($data["leads"][$i]['custom_fields'][$j]['values']) == 0) {
-								$row .= '"";';
-							} else {
-								for($t = 0; $t < count($data["leads"][$i]['custom_fields'][$j]['values']); $t++) {
-									if($t < count($data["leads"][$i]['custom_fields'][$j]['values']) - 1) {
-										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'",';
-									} else {
-										$row .= '"'.$data["leads"][$i]['custom_fields'][$j]['values'][$t]['value'].'"'."\r\n";
-									}
-								}
-							}
-						} else $row .= '""'."\r\n";
-					}
+
+			$row .= '"'.$contact['name'].'";'; #Имя контакта
+
+            if(count($lead['custom_fields']) != 0) {
+                $row .= '"'.$company['name'].'";'; #Имя компании
+
+                #Перебераем все поля, если они есть
+                for($j = 0; $j < count($lead['custom_fields']); $j++) {
+                    $field = $lead['custom_fields'][$j]; #Текущая поле
+
+                    #Заполняем header названиями полей
+                    if($i == 0) {
+                        if($j < count($lead['custom_fields']) - 1)
+                            $header .= '"'.$field['name'].'";';
+                        else {
+                            $header .= '"'.$field['name'].'"'."\r\n";
+                        }
+                    }
+
+                    #Заполняем row значениями
+                    if(count($field['values']) != 0) {
+                        #Перебераем все значения поля, если они есть
+                        for($t = 0; $t < count($field['values']); $t++) {
+                            $value = $field['values'][$t]['value']; #Одно значение
+
+                            if($t < count($field['values']) - 1) {
+                                $row .= '"'.$value.'",';
+                            } elseif($j < count($lead['custom_fields']) - 1) {
+                                $row .= '"'.$value.'";';
+                            } else {
+                                $row .= '"'.$value.'"'."\r\n";
+                            }
+                        }
+                    } else {
+                        $row .= '"";';
+                    }
 				}
 			} else {
-                $row .= '"'.$data["companies"][$i]['name'].'"'."\r\n";
+                $row .= '"'.$company['name'].'"'."\r\n";
             }
 		}
-		return iconv('UTF-8','Windows-1251',$header."\r\n".$row);
+		return iconv('UTF-8','Windows-1251',$header.$row);
 	}
 
 	/**
@@ -174,8 +169,8 @@ class MyExportWidget {
 
     /**
      * Получает данные по селакам, контактам, компаниям по их id
-     * @param $data array
-     * @param $type string (leads|contacts|companies)
+     * @param $data array - массив с id сущности
+     * @param $type string (leads|contacts|companies) - тип сущности
      *
      * @return array
      */
@@ -218,17 +213,6 @@ class MyExportWidget {
 
 		$response = $this->send_request($link);
 		return $response['links'];
-	}
-
-    /**
-     * Возвращает кастомные поля у сделок
-     * @return array
-    */
-	private function get_fields() {
-		$link='https://'.$this->_configs['SUB_DOMAIN'].'.amocrm.ru/private/api/v2/json/accounts/current';
-
-		$response = $this->send_request($link);
-		return $response['account']['custom_fields']['leads'];
 	}
 
     /**
