@@ -222,7 +222,6 @@ class MyExportWidget
 		return $response['links'];
 	}
 
-
     /**
      * Возвращает кастомные поля у сделок
      * @return array
