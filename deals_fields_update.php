@@ -78,7 +78,7 @@ function get_сustom_fields($deals_fields) {
  */
 function get_deals_list($subdomain, $limit_rows, $limit_offset = 0) {
     #Формируем ссылку для запроса
-    $link='https://'.$subdomain.'.amocrm.ru/private/api/v2/json/leads/list?limit_rows='.$limit_rows.'&limit_offset='.$limit_offset;
+    $link = 'https://'.$subdomain.'.amocrm.ru/private/api/v2/json/leads/list?limit_rows='.$limit_rows.'&limit_offset='.$limit_offset;
 
     $response = send_request($link);
 
