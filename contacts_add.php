@@ -14,7 +14,7 @@ if(count($contacts_data) > $max) {
 			$set['request']['contacts']['add'][] = get_contact_by_index($contacts_data, $deals_id, $custom_fields, $i);
 	}
 
-	echo "Сделки успешно добавлены за ".(microtime(true) - $start_time)." сек.";
+	echo "Сделки успешно добавлены за ".(microtime(TRUE) - $start_time)." сек.";
 
 } else {
 	for($i = 0; $i < count($contacts_data); $i++) {
@@ -22,7 +22,7 @@ if(count($contacts_data) > $max) {
 	}
 
 	if(send_сontacts_request($subdomain, $set));
-		echo "Сделки успешно добавлены за ".(microtime(true) - $start_time)." сек.";
+		echo "Сделки успешно добавлены за ".(microtime(TRUE) - $start_time)." сек.";
 }
 
 function get_contact_by_index($contacts_data, $dealsID, $custom_fields, $iter) {

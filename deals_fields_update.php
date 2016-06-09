@@ -18,7 +18,7 @@ while(TRUE) {
         $rem = $deals_list[0]['id'];
         $i++;
     } else { #Если вернулись те же сделки выходим из цикла
-        $result = array_filter($deals_list,function($a){
+        $result = array_filter($deals_list, function($a){
             return $a["id"] == $GLOBALS['rem'];
         });
 

@@ -1,5 +1,5 @@
 <?php
-$start_time = microtime(true);
+$start_time = microtime(TRUE);
 
 set_time_limit(0);
 error_reporting(-1);
