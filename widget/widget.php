@@ -8,7 +8,7 @@ class MyExportWidget
 	private $_configs;
 
 	public function __construct($data, $configs) {
-		$this->_leads_data = json_decode($data, true);
+		$this->_leads_data = json_decode($data, TRUE);
 		$this->_configs = $configs;
 	}
 
