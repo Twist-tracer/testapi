@@ -14,7 +14,9 @@ define(['jquery'], function($){
 				self.w_code = self.get_settings().widget_code;
 
 				var html_data =
-					'<span class="mew-link" id="leads-export">Экспорт выбранных сделок</span>' +
+					'<span class="mew-link" id="mew-leads-export">Экспорт выбранных сделок</span>' +
+                    '<br>' +
+                    '<span class="mew-link" id="mew-settings">Настройки</span>' +
 					'<link type="text/css" rel="stylesheet" href="/upl/'+self.w_code+'/widget/style.css" >';
 
 				self.render_template(
@@ -33,9 +35,12 @@ define(['jquery'], function($){
 				return true;
 			},
 			bind_actions: function(){
-                $('#leads-export').on('click', function() {
+                $('#mew-leads-export').on('click', function() {
                     var url = 'http://amocrm.loc/widget/export.php';
                     self.sendInfo(url, self.leads);
+                });
+                $('#mew-settings').on('click', function() {
+                    consol.log(self.settings);
                 });
 
 				return true;
