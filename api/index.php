@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Работа с API</title>
-	<link rel="stylesheet" type="text/css" href="css/main.css" media="all">
+	<link rel="stylesheet" type="text/css" href="../css/main.css" media="all">
 	<script type="text/javascript">
 		function checkType(selectType) {
 			if(Number(selectType.value) == 5) {
