@@ -15,8 +15,6 @@ define(['jquery'], function($){
 
 				var html_data =
 					'<span class="mew-link" id="mew-leads-export">Экспорт выбранных сделок</span>' +
-                    '<br>' +
-                    '<span class="mew-link" id="mew-settings">Настройки</span>' +
 					'<link type="text/css" rel="stylesheet" href="/upl/'+self.w_code+'/widget/style.css" >';
 
 				self.render_template(
